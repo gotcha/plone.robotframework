@@ -21,5 +21,5 @@ def pybot():
 
 
 def robot():
-    run_cli(['--listener', 'plone.robotframework.zopeserver.RobotListener']
+    run_cli(['--listener', 'plone.robotframework.listener.RobotListener']
             + sys.argv[1:])

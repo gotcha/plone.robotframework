@@ -1,19 +1,16 @@
 # -*- coding: utf-8 -*-
 import argparse
 import logging
-import os
 import sys
 import time
 import xmlrpclib
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 
 from plone.robotframework.remotelibrary import RemoteLibrary
+from plone.robotframework.listener import LISTENER_PORT
+from plone.robotframework.listener import LISTENER_HOST
 
 HAS_VERBOSE_CONSOLE = False
-
-ZSERVER_HOST = os.getenv("ZSERVER_HOST", "localhost")
-LISTENER_HOST = os.getenv("LISTENER_HOST", ZSERVER_HOST)
-LISTENER_PORT = int(os.getenv("LISTENER_PORT", 10001))
 
 TIME = lambda: time.strftime('%H:%M:%S')
 WAIT = lambda msg:  '%s [\033[33m wait \033[0m] %s' % (TIME(), msg)
@@ -181,8 +178,10 @@ def setup_layer(layer, setup_layers=setup_layers):
                 setup_layer(base, setup_layers)
         if hasattr(layer, 'setUp'):
             if HAS_VERBOSE_CONSOLE:
-                print WAIT("Set up %s.%s" % (layer.__module__,
-                                                   layer.__name__))
+                print WAIT("Set up %s.%s" % (
+                    layer.__module__,
+                    layer.__name__
+                ))
             layer.setUp()
         setup_layers[layer] = 1
 
@@ -199,8 +198,10 @@ def tear_down(setup_layers=setup_layers):
             try:
                 if hasattr(l, 'tearDown'):
                     if HAS_VERBOSE_CONSOLE:
-                        print WAIT("Tear down %s.%s" % (l.__module__,
-                                                              l.__name__))
+                        print WAIT("Tear down %s.%s" % (
+                            l.__module__,
+                            l.__name__
+                        ))
                     l.tearDown()
             except NotImplementedError:
                 pass
