@@ -18,7 +18,7 @@ class RobotListener:
         self.server = xmlrpclib.ServerProxy(server_listener_address)
 
     def start_test(self, name, attrs):
-        self.server.zodb_setup()
+        self.server.zodb_setup(name)
 
     def end_test(self, name, attrs):
-        self.server.zodb_teardown()
+        self.server.zodb_teardown(name)
