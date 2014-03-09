@@ -13,6 +13,8 @@ from plone.robotframework.listener import LISTENER_HOST
 HAS_VERBOSE_CONSOLE = False
 
 TIME = lambda: time.strftime('%H:%M:%S')
+START = lambda msg:  '%s [\033[35m start \033[0m] %s' % (TIME(), msg)
+END = lambda msg:  '%s [\033[35m end \033[0m] %s' % (TIME(), msg)
 WAIT = lambda msg:  '%s [\033[33m wait \033[0m] %s' % (TIME(), msg)
 ERROR = lambda msg: '%s [\033[31m ERROR \033[0m] %s' % (TIME(), msg)
 READY = lambda msg: '%s [\033[32m ready \033[0m] %s' % (TIME(), msg)
@@ -29,9 +31,8 @@ def start(zope_layer_dotted_name):
 
     listener = SimpleXMLRPCServer((LISTENER_HOST, LISTENER_PORT),
                                   logRequests=False)
-    listener.allow_none = True
-    listener.register_function(zsl.zodb_setup, 'zodb_setup')
-    listener.register_function(zsl.zodb_teardown, 'zodb_teardown')
+    listener.register_function(zsl.zodb_setup_and_log, 'zodb_setup')
+    listener.register_function(zsl.zodb_teardown_and_log, 'zodb_teardown')
 
     try:
         listener.serve_forever()
@@ -134,6 +135,19 @@ class Zope2Server:
     def stop_zope_server(self):
         tear_down()
         self.zope_layer = None
+
+    def zodb_setup_and_log(self, name):
+        if HAS_VERBOSE_CONSOLE:
+            print
+            print START(name)
+        self.zodb_setup()
+        return True
+
+    def zodb_teardown_and_log(self, name):
+        self.zodb_teardown()
+        if HAS_VERBOSE_CONSOLE:
+            print END(name)
+        return True
 
     def zodb_setup(self, layer_dotted_name=None):
         if layer_dotted_name:
